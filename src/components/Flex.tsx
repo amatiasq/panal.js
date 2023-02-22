@@ -22,10 +22,14 @@ export function Flex(props: {
     <div class={styles} style={{ 'flex-direction': props.direction }}>
       {props.content.map((item, i) => (
         <>
-          {i === 0 ? null : <Divider />}
+          {i === 0 ? null : <Divider onResize={onResize} />}
           <Flex direction={otherDirection} content={item} />
         </>
       ))}
     </div>
   );
+
+  function onResize(delta: number) {
+    console.log({delta});
+  }
 }
