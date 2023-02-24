@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { createSignal } from 'solid-js';
-import { PanelTree } from '../types';
+import { PanelContainer, PanelTree } from '../types';
 import { Flex } from './Flex';
 
 const styles = css`
@@ -17,15 +17,15 @@ export function App() {
   const rootDirection = 'row';
   const [distribution, setDistribution] = createSignal<PanelTree>([
     { content: 1 },
-    [{ content: 2 }, { content: 3 }],
+    { children: [{ content: 2 }, { content: 3 }] },
   ]);
 
   return (
     <div class={styles}>
       <Flex
         direction={rootDirection}
-        panels={distribution()}
-        onPanelsChange={setDistribution}
+        content={{ children: distribution() }}
+        onPanelsChange={(x) => setDistribution((x as PanelContainer).children)}
       />
     </div>
   );

@@ -3,10 +3,16 @@ export type PanelData = {
   size?: number;
 };
 
-export type Branch = PanelTree | PanelData;
-export type PanelTree = Branch[];
+export type PanelContainer = {
+  children: PanelBranch[];
+  size?: number;
+};
 
-export function isPanelContent(value: Branch): value is PanelData {
+export type PanelBranch = PanelContainer | PanelData;
+
+export type PanelTree = PanelBranch[];
+
+export function isPanelContent(value: PanelBranch): value is PanelData {
   return (
     value != null &&
     typeof value === 'object' &&

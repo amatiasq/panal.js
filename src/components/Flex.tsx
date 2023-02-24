@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
-import { Branch, isPanelContent, PanelTree } from '../types';
+import { Index } from 'solid-js';
+import { isPanelContent, PanelBranch, PanelContainer } from '../types';
 import { Divider } from './Divider';
 import { Panel } from './Panel';
 
@@ -13,12 +14,12 @@ let a = 0;
 
 export function Flex(props: {
   ref?: HTMLDivElement;
-  panels: Branch;
+  content: PanelBranch;
   direction: 'row' | 'column';
-  onPanelsChange: (updated: Branch) => void;
+  onPanelsChange: (updated: PanelBranch) => void;
 }) {
-  if (isPanelContent(props.panels)) {
-    return <Panel ref={props.ref}>{props.panels.content}</Panel>;
+  if (isPanelContent(props.content)) {
+    return <Panel ref={props.ref} {...props.content} />;
   }
 
   const otherDirection = props.direction === 'row' ? 'column' : 'row';
@@ -55,22 +56,24 @@ export function Flex(props: {
     a.style.flexBasis = `${newASize}px`;
     b.style.flexBasis = `${newBSize}px`;
 
-    const list = props.panels as PanelTree;
+    const list = (props.content as PanelContainer).children;
 
     console.log(
       'Emitting panels change',
       { ...list[index - 1], size: newASize },
       { ...list[index], size: newBSize }
     );
-    props.onPanelsChange(
-      replaceItems(
+
+    props.onPanelsChange({
+      ...props.content,
+      children: replaceItems(
         list,
         index,
         2,
         { ...list[index], size: newASize },
         { ...list[index + 1], size: newBSize }
-      )
-    );
+      ),
+    });
   }
 
   return (
@@ -79,28 +82,33 @@ export function Flex(props: {
       class={styles}
       style={{ 'flex-direction': props.direction }}
     >
-      {props.panels.map((item, i) => (
-        <>
-          {i === 0 ? null : (
-            <Divider
-              direction={props.direction}
-              onResizeStart={() => startResizeOperation(i)}
-              onResizeEnd={() => endResizeOperation(i)}
-              onResize={resize}
+      <Index each={props.content.children}>
+        {(item, i) => (
+          <>
+            {i === 0 ? null : (
+              <Divider
+                direction={props.direction}
+                onResizeStart={() => startResizeOperation(i)}
+                onResizeEnd={() => endResizeOperation(i)}
+                onResize={resize}
+              />
+            )}
+            <Flex
+              ref={panels[i]}
+              direction={otherDirection}
+              content={item()}
+              onPanelsChange={(updated) => {
+                console.log('Propagating panels change', updated);
+                const content = props.content as PanelContainer;
+                props.onPanelsChange({
+                  ...content,
+                  children: replaceItem(content.children, i, updated),
+                });
+              }}
             />
-          )}
-          <Flex
-            ref={panels[i]}
-            direction={otherDirection}
-            panels={item}
-            onPanelsChange={(updated) => {
-              console.log('Propagating panels change', updated);
-              const list = props.panels as PanelTree;
-              props.onPanelsChange(replaceItem(list, i, updated));
-            }}
-          />
-        </>
-      ))}
+          </>
+        )}
+      </Index>
     </div>
   );
 }
