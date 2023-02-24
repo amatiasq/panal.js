@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
-import { Branch } from '../types';
+import { createSignal } from 'solid-js';
+import { PanelTree } from '../types';
 import { Flex } from './Flex';
 
 const styles = css`
@@ -14,11 +15,18 @@ const styles = css`
 
 export function App() {
   const rootDirection = 'row';
-  const distribution = [[1], [3, 4]] satisfies Branch;
+  const [distribution, setDistribution] = createSignal<PanelTree>([
+    { content: 1 },
+    [{ content: 2 }, { content: 3 }],
+  ]);
 
   return (
     <div class={styles}>
-      <Flex direction={rootDirection} content={distribution} />
+      <Flex
+        direction={rootDirection}
+        panels={distribution()}
+        onPanelsChange={setDistribution}
+      />
     </div>
   );
 }
