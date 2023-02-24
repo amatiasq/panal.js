@@ -10,6 +10,7 @@ export function replaceItems<T>(
   amount: number,
   ...values: T[]
 ) {
+  debugger;
   const before = list.slice(0, index);
   const after = list.slice(index + amount);
   return [...before, ...values, ...after];

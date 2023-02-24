@@ -3,12 +3,12 @@ export type PanelData = {
   size?: number;
 };
 
-export type PanelContainer = {
+export type PanelGroup = {
   children: PanelBranch[];
   size?: number;
 };
 
-export type PanelBranch = PanelContainer | PanelData;
+export type PanelBranch = PanelGroup | PanelData;
 
 export type PanelTree = PanelBranch[];
 

@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { Index } from 'solid-js';
-import { isPanelContent, PanelBranch, PanelContainer } from '../types';
+import { isPanelContent, PanelBranch, PanelGroup } from '../types';
 import { px, replaceItem, replaceItems } from '../utilities';
 import { Divider } from './Divider';
 import { Panel } from './Panel';
@@ -25,6 +25,7 @@ export function Flex(props: {
 
   const otherDirection = props.direction === 'row' ? 'column' : 'row';
   const panels = [] as HTMLDivElement[];
+  const content = () => props.content as PanelGroup;
 
   let dragging: {
     index: number;
@@ -41,7 +42,7 @@ export function Flex(props: {
     dragging = { index, a, b, aSize: a[prop], bSize: b[prop] };
   }
 
-  function endResizeOperation(index: number) {
+  function endResizeOperation() {
     dragging = null;
   }
 
@@ -57,22 +58,15 @@ export function Flex(props: {
     a.style.flexBasis = px(newASize);
     b.style.flexBasis = px(newBSize);
 
-    const list = (props.content as PanelContainer).children;
-
-    console.log(
-      'Emitting panels change',
-      { ...list[index - 1], size: newASize },
-      { ...list[index], size: newBSize }
-    );
-
+    const list = content().children;
     props.onPanelsChange({
-      ...props.content,
+      ...content(),
       children: replaceItems(
         list,
-        index,
+        index - 1,
         2,
-        { ...list[index], size: newASize },
-        { ...list[index + 1], size: newBSize }
+        { ...list[index - 1], size: newASize },
+        { ...list[index], size: newBSize }
       ),
     });
   }
@@ -93,7 +87,7 @@ export function Flex(props: {
               <Divider
                 direction={props.direction}
                 onResizeStart={() => startResizeOperation(i)}
-                onResizeEnd={() => endResizeOperation(i)}
+                onResizeEnd={endResizeOperation}
                 onResize={resize}
               />
             )}
@@ -103,7 +97,7 @@ export function Flex(props: {
               content={item()}
               onPanelsChange={(updated) => {
                 console.log('Propagating panels change', updated);
-                const content = props.content as PanelContainer;
+                const content = props.content as PanelGroup;
                 props.onPanelsChange({
                   ...content,
                   children: replaceItem(content.children, i, updated),
