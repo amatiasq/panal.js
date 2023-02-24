@@ -1,3 +1,6 @@
+import { Component } from 'solid-js';
+import { JSX } from 'solid-js/jsx-runtime';
+
 export type PanelData = {
   content: number;
   size?: number;
@@ -20,3 +23,8 @@ export function isPanelContent(value: PanelBranch): value is PanelData {
     typeof value.content === 'number'
   );
 }
+
+// internals
+
+export type DOMElements = keyof JSX.IntrinsicElements;
+export type ElementType<Props = any> = DOMElements | Component<Props>;

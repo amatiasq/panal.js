@@ -1,26 +1,37 @@
+import { ParentProps } from 'solid-js';
+import { Dynamic } from 'solid-js/web';
+import { ElementType } from '../types';
+
 export type DragDelta = [deltaX: number, deltaY: number];
 export type DragListener = (delta: DragDelta) => void;
 
-export function Draggable(props: {
-  class?: string;
-  hideDrawImage?: boolean;
-  onDrag: DragListener;
-  onDragStart?: () => void;
-  onDragEnd?: () => void;
-}) {
+export function Draggable<C extends ElementType>(
+  props: ParentProps<{
+    as?: C;
+    class?: string;
+    hideDrawImage?: boolean;
+    drawElement?: () => HTMLElement;
+    onDrag: DragListener;
+    onDragStart?: () => void;
+    onDragEnd?: () => void;
+  }>
+) {
   let dragStartX = 0;
   let dragStartY = 0;
   let lastEmittedDelta = [0, 0] as DragDelta;
   let hasSkippedOne = false;
 
   return (
-    <div
+    <Dynamic
+      component={props.as ?? 'div'}
       class={props.class}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onDrag={onDrag}
       draggable={true}
-    />
+    >
+      {props.children}
+    </Dynamic>
   );
 
   function emit(deltaX: number, deltaY: number) {
@@ -55,6 +66,8 @@ export function Draggable(props: {
 
     if (props.hideDrawImage) {
       setImageTo1pxTransparent(e);
+    } else if (props.drawElement) {
+      setDrawImage(e, props.drawElement());
     }
 
     emit(0, 0);
@@ -77,17 +90,21 @@ export function Draggable(props: {
     emit(deltaX, deltaY);
   }
 
-  function setImageTo1pxTransparent(e: DragEvent) {
-    // set the drag image to a transparent pixel
-    const img = new Image();
-    img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-    e.dataTransfer?.setDragImage(img, 0, 0);
-    console.log('set image');
-  }
-
   function mayBeWeirdEventSentByBrowser(deltaX: number, deltaY: number) {
     const diffX = Math.abs(deltaX - lastEmittedDelta[0]);
     const diffY = Math.abs(deltaY - lastEmittedDelta[1]);
     return diffX > 100 && diffY > 100;
   }
+}
+
+function setImageTo1pxTransparent(e: DragEvent) {
+  // set the drag image to a transparent pixel
+  const img = new Image();
+  img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+  e.dataTransfer?.setDragImage(img, 0, 0);
+  console.log('set image');
+}
+
+function setDrawImage(event: DragEvent, el: HTMLElement) {
+  event.dataTransfer?.setDragImage(el, el.offsetWidth / 2, 16);
 }
