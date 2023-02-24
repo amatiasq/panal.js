@@ -11,8 +11,6 @@ const styles = css`
   justify-items: stretch;
 `;
 
-let a = 0;
-
 export function Flex(props: {
   ref?: HTMLDivElement;
   content: PanelBranch;
@@ -30,19 +28,19 @@ export function Flex(props: {
   let dragging: {
     a: number;
     b: number;
-    aSize: number;
-    bSize: number;
+    sizes: number[];
   } | null = null;
 
   function startResizeOperation(index: number) {
     const prop = props.direction === 'row' ? 'offsetWidth' : 'offsetHeight';
+    const sizes = panels.map((el) => el[prop]);
 
-    dragging = {
-      a: index - 1,
-      b: index,
-      aSize: panels[index - 1][prop],
-      bSize: panels[index][prop],
-    };
+    dragging = { a: index - 1, b: index, sizes };
+
+    props.onPanelsChange({
+      ...content(),
+      children: sizes.map((x, i) => setPanelSize(i, x)),
+    });
   }
 
   function endResizeOperation() {
@@ -54,17 +52,24 @@ export function Flex(props: {
       throw new Error('Resize operation not started');
     }
 
-    const { a, b, aSize, bSize } = dragging;
-    const newASize = aSize + delta;
-    const newBSize = bSize - delta;
-
-    panels[a].style.flexBasis = px(newASize);
-    panels[b].style.flexBasis = px(newBSize);
+    const { a, b, sizes } = dragging;
+    const aSize = sizes[a] + delta;
+    const bSize = sizes[b] - delta;
 
     const copy = [...content().children];
-    copy[a] = { ...copy[a], size: newASize };
-    copy[b] = { ...copy[b], size: newBSize };
-    props.onPanelsChange({ ...content(), children: copy });
+    copy[a] = setPanelSize(a, aSize);
+    copy[b] = setPanelSize(b, bSize);
+
+    props.onPanelsChange({
+      ...content(),
+      children: copy,
+    });
+  }
+
+  function setPanelSize(index: number, newSize: number) {
+    panels[index].style.flexBasis = px(newSize);
+    const data = content().children;
+    return { ...data[index], size: newSize };
   }
 
   return (
