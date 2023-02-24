@@ -8,6 +8,10 @@ const styles = css`
   align-items: center;
 `;
 
-export function Panel(props: ParentProps<{}>) {
-  return <div class={styles}>{props.children}</div>;
+export function Panel(props: ParentProps<{ ref?: HTMLDivElement }>) {
+  return (
+    <div ref={props.ref} class={styles}>
+      {props.children}
+    </div>
+  );
 }

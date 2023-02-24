@@ -1,7 +1,8 @@
 import { css } from '@emotion/css';
 import { createMemo } from 'solid-js';
+import { Draggable } from './Draggable';
 
-const handleStyles = css`
+export const handleStyles = css`
   content: '';
   display: block;
   position: absolute;
@@ -13,7 +14,7 @@ const handleStyles = css`
 `;
 
 const styles = css`
-  flex-basis: 3px;
+  flex-basis: 2px;
   background: red;
   position: relative;
   --offset-row: 0;
@@ -42,11 +43,13 @@ const styles = css`
 export function Divider(props: {
   direction: 'row' | 'column';
   onResize: (delta: number) => void;
+  onResizeEnd(): void;
+  onResizeStart(): void;
 }) {
   const hoverStyles = createMemo(
     () => css`
       :hover {
-        --offset-${props.direction}: -5px;
+        --offset-${props.direction}: -2px;
       }
       div {
         cursor: ${props.direction === 'row' ? 'col-resize' : 'row-resize'};
@@ -54,36 +57,25 @@ export function Divider(props: {
     `
   );
 
+  let el!: HTMLDivElement;
+
   return (
-    <div class={`Divider ${styles} ${hoverStyles()}`}>
-      <div class={handleStyles} draggable={true} />
+    <div ref={el} class={`Divider ${styles} ${hoverStyles()}`}>
+      <Draggable
+        class={handleStyles}
+        hideDrawImage
+        onDragStart={() => {
+          el.classList.add('is-dragging');
+          props.onResizeStart();
+        }}
+        onDragEnd={() => {
+          el.classList.remove('is-dragging');
+          props.onResizeEnd();
+        }}
+        onDrag={([x, y]) => {
+          props.onResize(props.direction === 'row' ? x : y);
+        }}
+      />
     </div>
   );
-}
-
-export function asDivider(target: EventTarget | null) {
-  const el = find(target, styles) as HTMLDivElement;
-  if (!el) return null;
-
-  return {
-    startDragging() {
-      el.classList.add('is-dragging');
-    },
-    stopDragging() {
-      el.classList.remove('is-dragging');
-      el.classList.remove('is-fake-dragging');
-    },
-    startFakeDragging() {
-      el.classList.add('is-fake-dragging');
-    },
-  };
-}
-
-function find(target: EventTarget | null, className: string) {
-  while (target && target instanceof HTMLElement) {
-    if (target.classList.contains(className)) return target;
-    target = target.parentElement;
-  }
-
-  return null;
 }

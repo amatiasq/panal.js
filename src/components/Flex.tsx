@@ -9,28 +9,67 @@ const styles = css`
   justify-items: stretch;
 `;
 
+let a = 0;
+
 export function Flex(props: {
+  ref?: HTMLDivElement;
   content: Branch | PanelContent;
   direction: 'row' | 'column';
 }) {
-  if (isPanelContent(props.content)) return <Panel>{props.content}</Panel>;
+  if (isPanelContent(props.content)) {
+    return <Panel ref={props.ref}>{props.content}</Panel>;
+  }
 
   const otherDirection = props.direction === 'row' ? 'column' : 'row';
+  const panels = [] as HTMLDivElement[];
+
+  let dragging: {
+    a: HTMLDivElement;
+    b: HTMLDivElement;
+    aSize: number;
+    bSize: number;
+  } | null = null;
+
+  function startResizeOperation(index: number) {
+    const a = panels[index - 1];
+    const b = panels[index];
+    const prop = props.direction === 'row' ? 'offsetWidth' : 'offsetHeight';
+    dragging = { a, b, aSize: a[prop], bSize: b[prop] };
+  }
+
+  function endResizeOperation(index: number) {
+    dragging = null;
+  }
+
+  function resize(delta: number) {
+    if (!dragging) {
+      throw new Error('Resize operation not started');
+    }
+
+    const { a, b, aSize, bSize } = dragging;
+    a.style.flexBasis = `${aSize + delta}px`;
+    b.style.flexBasis = `${bSize - delta}px`;
+  }
 
   return (
-    <div class={styles} style={{ 'flex-direction': props.direction }}>
+    <div
+      ref={props.ref}
+      class={styles}
+      style={{ 'flex-direction': props.direction }}
+    >
       {props.content.map((item, i) => (
         <>
           {i === 0 ? null : (
-            <Divider direction={props.direction} onResize={onResize} />
+            <Divider
+              direction={props.direction}
+              onResizeStart={() => startResizeOperation(i)}
+              onResizeEnd={() => endResizeOperation(i)}
+              onResize={resize}
+            />
           )}
-          <Flex direction={otherDirection} content={item} />
+          <Flex ref={panels[i]} direction={otherDirection} content={item} />
         </>
       ))}
     </div>
   );
-
-  function onResize(delta: number) {
-    console.log({ delta });
-  }
 }
