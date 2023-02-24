@@ -49,7 +49,7 @@ export function Divider(props: {
   const hoverStyles = createMemo(
     () => css`
       :hover {
-        --offset-${props.direction}: -2px;
+        --offset-${props.direction}: -3px;
       }
       div {
         cursor: ${props.direction === 'row' ? 'col-resize' : 'row-resize'};
