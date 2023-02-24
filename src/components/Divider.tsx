@@ -20,6 +20,14 @@ const styles = css`
   --offset-row: 0;
   --offset-column: 0;
 
+  &.row {
+    max-width: 2px;
+  }
+
+  &.column {
+    max-height: 2px;
+  }
+
   :hover,
   &.is-dragging {
     div {
@@ -60,7 +68,10 @@ export function Divider(props: {
   let el!: HTMLDivElement;
 
   return (
-    <div ref={el} class={`Divider ${styles} ${hoverStyles()}`}>
+    <div
+      ref={el}
+      class={`Divider ${styles} ${props.direction} ${hoverStyles()}`}
+    >
       <Draggable
         class={handleStyles}
         hideDrawImage

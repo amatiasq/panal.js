@@ -1,5 +1,7 @@
 import { css } from '@emotion/css';
 import { type ParentProps } from 'solid-js';
+import { PanelData } from '../types';
+import { px } from '../utilities';
 
 const styles = css`
   flex: 1;
@@ -8,10 +10,16 @@ const styles = css`
   align-items: center;
 `;
 
-export function Panel(props: ParentProps<{ ref?: HTMLDivElement }>) {
+export function Panel(
+  props: ParentProps<PanelData & { ref?: HTMLDivElement }>
+) {
   return (
-    <div ref={props.ref} class={styles}>
-      {props.children}
+    <div
+      ref={props.ref}
+      class={styles}
+      style={{ 'flex-basis': px(props.size) }}
+    >
+      {props.content}
     </div>
   );
 }

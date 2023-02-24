@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { Index } from 'solid-js';
 import { isPanelContent, PanelBranch, PanelContainer } from '../types';
+import { px, replaceItem, replaceItems } from '../utilities';
 import { Divider } from './Divider';
 import { Panel } from './Panel';
 
@@ -53,8 +54,8 @@ export function Flex(props: {
     const newASize = aSize + delta;
     const newBSize = bSize - delta;
 
-    a.style.flexBasis = `${newASize}px`;
-    b.style.flexBasis = `${newBSize}px`;
+    a.style.flexBasis = px(newASize);
+    b.style.flexBasis = px(newBSize);
 
     const list = (props.content as PanelContainer).children;
 
@@ -80,7 +81,10 @@ export function Flex(props: {
     <div
       ref={props.ref}
       class={styles}
-      style={{ 'flex-direction': props.direction }}
+      style={{
+        'flex-direction': props.direction,
+        'flex-basis': px(props.content.size),
+      }}
     >
       <Index each={props.content.children}>
         {(item, i) => (
@@ -111,21 +115,4 @@ export function Flex(props: {
       </Index>
     </div>
   );
-}
-
-function replaceItem<T>(list: T[], index: number, value: T) {
-  const before = list.slice(0, index);
-  const after = list.slice(index + 1);
-  return [...before, value, ...after];
-}
-
-function replaceItems<T>(
-  list: T[],
-  index: number,
-  amount: number,
-  ...values: T[]
-) {
-  const before = list.slice(0, index);
-  const after = list.slice(index + amount);
-  return [...before, ...values, ...after];
 }
