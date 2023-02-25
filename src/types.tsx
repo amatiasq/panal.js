@@ -1,4 +1,4 @@
-import { Component } from 'solid-js';
+import { Component, ParentProps } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
 
 export type PanelData = {
@@ -28,3 +28,17 @@ export function isPanelContent(value: PanelBranch): value is PanelData {
 
 export type DOMElements = keyof JSX.IntrinsicElements;
 export type ElementType<Props = any> = DOMElements | Component<Props>;
+
+export interface RefProp<T extends HTMLElement = HTMLElement> {
+  ref?: (r: T) => void;
+}
+
+export interface AsProp<T extends ElementType = ElementType> {
+  as?: T;
+}
+
+export interface ChildrenProp extends ParentProps<{}> {}
+
+export interface ClassProp {
+  class?: string;
+}

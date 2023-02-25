@@ -57,7 +57,6 @@ export function ResizableStack(props: {
     const bSize = sizes[b] - delta;
 
     const copy = [...content().children];
-    debugger;
     copy[a] = setPanelSize(a, aSize);
     copy[b] = setPanelSize(b, bSize);
 

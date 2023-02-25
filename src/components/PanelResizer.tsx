@@ -15,7 +15,7 @@ export const handleStyles = css`
 
 const styles = css`
   flex-basis: 2px;
-  background: red;
+  background: black;
   position: relative;
   --offset-row: 0;
   --offset-column: 0;
@@ -40,7 +40,7 @@ const styles = css`
   }
 
   &.is-dragging div {
-    background: red;
+    background: white;
   }
 `;
 

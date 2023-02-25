@@ -1,21 +1,18 @@
-import { ParentProps } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
-import { ElementType } from '../types';
+import { AsProp, ChildrenProp, ClassProp } from '../types';
 
 export type DragDelta = [deltaX: number, deltaY: number];
 export type DragListener = (delta: DragDelta) => void;
 
-export function Draggable<C extends ElementType>(
-  props: ParentProps<{
-    as?: C;
-    class?: string;
-    hideDrawImage?: boolean;
-    drawElement?: () => HTMLElement;
-    onDrag: DragListener;
-    onDragStart?: () => void;
-    onDragEnd?: () => void;
-  }>
-) {
+export interface DraggableProps extends AsProp, ChildrenProp, ClassProp {
+  hideDrawImage?: boolean;
+  drawElement?: () => HTMLElement;
+  onDrag: DragListener;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
+}
+
+export function Draggable(props: DraggableProps) {
   let dragStartX = 0;
   let dragStartY = 0;
   let lastEmittedDelta = [0, 0] as DragDelta;

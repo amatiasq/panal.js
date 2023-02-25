@@ -1,6 +1,5 @@
 import { css } from '@emotion/css';
-import { type ParentProps } from 'solid-js';
-import { PanelData } from '../types';
+import { ChildrenProp, PanelData, RefProp } from '../types';
 import { px } from '../utilities';
 import { Draggable } from './Draggable';
 
@@ -20,15 +19,16 @@ const panelContentStyles = css`
   padding: 0.5em 1em;
 `;
 
-export function Panel(
-  props: ParentProps<PanelData & { ref?: HTMLDivElement }>
-) {
+export interface PanelProps extends PanelData, ChildrenProp, RefProp {}
+
+export function Panel(props: PanelProps) {
   let el: HTMLDivElement;
+  debugger;
 
   return (
     <div
       ref={(ref) => {
-        props.ref = ref;
+        props.ref?.(ref);
         el = ref;
       }}
       class={styles}
