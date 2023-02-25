@@ -80,7 +80,7 @@ export function Panel(props: PanelProps) {
   }
 
   function onDragEnter(event: DragEvent) {
-    if (event.currentTarget == el) return;
+    // if (event.currentTarget == el) return;
 
     event.stopPropagation();
     console.log('Drag enter', instance);
