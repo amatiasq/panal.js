@@ -33,7 +33,6 @@ export function Draggable(props: DraggableProps) {
 
   function emit(deltaX: number, deltaY: number) {
     lastEmittedDelta = [deltaX, deltaY];
-    console.log(lastEmittedDelta);
     props.onDrag(lastEmittedDelta);
   }
 
@@ -99,7 +98,6 @@ function setImageTo1pxTransparent(e: DragEvent) {
   const img = new Image();
   img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
   e.dataTransfer?.setDragImage(img, 0, 0);
-  console.log('set image');
 }
 
 function setDrawImage(event: DragEvent, el: HTMLElement) {

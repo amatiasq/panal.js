@@ -4,6 +4,8 @@
 //   return [...before, value, ...after];
 // }
 
+import { RefProp } from './types';
+
 // export function replaceItems<T>(
 //   list: T[],
 //   index: number,
@@ -19,6 +21,12 @@ export function px<T extends number | undefined>(value: T) {
   return value && `${value}px`;
 }
 
-export function isCallable<T>(x: T): x is Extract<T, Function> {
+type AnyFunction = (...args: any[]) => any;
+export function isCallable<T>(x: T): x is Extract<T, AnyFunction> {
   return typeof x === 'function';
+}
+
+export function forwardRef<T extends HTMLElement>(props: RefProp<T>, ref: T) {
+  isCallable(props.ref) ? props.ref(ref) : (props.ref = ref);
+  return ref;
 }

@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { ChildrenProp, PanelData, RefProp } from '../types';
-import { isCallable, px } from '../utilities';
+import { forwardRef, px } from '../utilities';
 import { Draggable } from './Draggable';
 
 const styles = css`
@@ -26,16 +26,13 @@ export interface PanelProps
 
 export function Panel(props: PanelProps) {
   let el: HTMLDivElement;
-  debugger;
 
   return (
     <div
-      ref={(ref) => {
-        isCallable(props.ref) ? props.ref(ref) : (props.ref = ref);
-        el = ref;
-      }}
+      ref={(ref) => (el = forwardRef(props, ref))}
       class={styles}
       style={{ 'flex-basis': px(props.size) }}
+      onDragOver={onDragOver}
     >
       <Draggable
         as="header"
@@ -55,5 +52,9 @@ export function Panel(props: PanelProps) {
 
   function onDragEnd() {
     console.log('Drag ended');
+  }
+
+  function onDragOver() {
+    console.log('Drag over panel');
   }
 }
