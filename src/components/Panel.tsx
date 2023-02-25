@@ -12,7 +12,7 @@ const styles = css`
   header {
     background: rgba(255, 255, 255, 0.2);
     border-bottom: 1px solid gray;
-    padding: 0.5em 1em;
+    padding: 0.05em 0.4em;
   }
 `;
 

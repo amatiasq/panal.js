@@ -40,42 +40,42 @@ export function Draggable<C extends ElementType>(
     props.onDrag(lastEmittedDelta);
   }
 
-  function onDrag(e: DragEvent) {
-    e.stopPropagation();
-    notifyDeltaChange(e);
+  function onDrag(event: DragEvent) {
+    event.stopPropagation();
+    notifyDeltaChange(event);
   }
 
-  function onDragEnd(e: DragEvent) {
-    e.stopPropagation();
-    notifyDeltaChange(e);
+  function onDragEnd(event: DragEvent) {
+    event.stopPropagation();
+    notifyDeltaChange(event);
 
     if (props.onDragEnd) {
       props.onDragEnd();
     }
   }
 
-  function onDragStart(e: DragEvent) {
-    e.stopPropagation();
+  function onDragStart(event: DragEvent) {
+    event.stopPropagation();
 
-    dragStartX = e.clientX;
-    dragStartY = e.clientY;
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
 
     if (props.onDragStart) {
       props.onDragStart();
     }
 
     if (props.hideDrawImage) {
-      setImageTo1pxTransparent(e);
+      setImageTo1pxTransparent(event);
     } else if (props.drawElement) {
-      setDrawImage(e, props.drawElement());
+      setDrawImage(event, props.drawElement());
     }
 
     emit(0, 0);
   }
 
-  function notifyDeltaChange(e: DragEvent) {
-    const deltaX = e.clientX - dragStartX;
-    const deltaY = e.clientY - dragStartY;
+  function notifyDeltaChange(event: DragEvent) {
+    const deltaX = event.clientX - dragStartX;
+    const deltaY = event.clientY - dragStartY;
 
     if (deltaX === lastEmittedDelta[0] && deltaY === lastEmittedDelta[1])
       return;
@@ -106,5 +106,8 @@ function setImageTo1pxTransparent(e: DragEvent) {
 }
 
 function setDrawImage(event: DragEvent, el: HTMLElement) {
-  event.dataTransfer?.setDragImage(el, el.offsetWidth / 2, 16);
+  const bounds = el.getBoundingClientRect();
+  const x = event.clientX - bounds.x;
+  const y = event.clientY - bounds.y;
+  event.dataTransfer?.setDragImage(el, x, y);
 }

@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { createSignal } from 'solid-js';
 import { PanelGroup, PanelTree } from '../types';
-import { Flex } from './Flex';
+import { ResizableStack } from './ResizableStack';
 
 const styles = css`
   border: 1px solid blue;
@@ -22,7 +22,7 @@ export function App() {
 
   return (
     <div class={styles}>
-      <Flex
+      <ResizableStack
         direction={rootDirection}
         content={{ children: distribution() }}
         onPanelsChange={(newContent) =>

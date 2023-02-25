@@ -2,8 +2,8 @@ import { css } from '@emotion/css';
 import { Index } from 'solid-js';
 import { isPanelContent, PanelBranch, PanelGroup } from '../types';
 import { px } from '../utilities';
-import { Divider } from './Divider';
 import { Panel } from './Panel';
+import { PanelResizer } from './PanelResizer';
 
 const styles = css`
   flex: 1;
@@ -11,7 +11,7 @@ const styles = css`
   justify-items: stretch;
 `;
 
-export function Flex(props: {
+export function ResizableStack(props: {
   ref?: HTMLDivElement;
   content: PanelBranch;
   direction: 'row' | 'column';
@@ -57,6 +57,7 @@ export function Flex(props: {
     const bSize = sizes[b] - delta;
 
     const copy = [...content().children];
+    debugger;
     copy[a] = setPanelSize(a, aSize);
     copy[b] = setPanelSize(b, bSize);
 
@@ -85,14 +86,14 @@ export function Flex(props: {
         {(item, i) => (
           <>
             {i === 0 ? null : (
-              <Divider
+              <PanelResizer
                 direction={props.direction}
                 onResizeStart={() => startResizeOperation(i)}
                 onResizeEnd={endResizeOperation}
                 onResize={resize}
               />
             )}
-            <Flex
+            <ResizableStack
               ref={panels[i]}
               direction={otherDirection}
               content={item()}

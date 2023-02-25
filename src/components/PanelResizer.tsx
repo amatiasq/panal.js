@@ -39,16 +39,12 @@ const styles = css`
     }
   }
 
-  &.is-fake-dragging:not(.is-dragging) {
-    background: blue;
-  }
-
   &.is-dragging div {
     background: red;
   }
 `;
 
-export function Divider(props: {
+export function PanelResizer(props: {
   direction: 'row' | 'column';
   onResize: (delta: number) => void;
   onResizeEnd(): void;
