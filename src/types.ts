@@ -30,7 +30,7 @@ export type DOMElements = keyof JSX.IntrinsicElements;
 export type ElementType<Props = any> = DOMElements | Component<Props>;
 
 export interface RefProp<T extends HTMLElement = HTMLElement> {
-  ref?: (r: T) => void;
+  ref?: T | ((r: T) => void);
 }
 
 export interface AsProp<T extends ElementType = ElementType> {

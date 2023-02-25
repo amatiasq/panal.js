@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { ChildrenProp, PanelData, RefProp } from '../types';
-import { px } from '../utilities';
+import { isCallable, px } from '../utilities';
 import { Draggable } from './Draggable';
 
 const styles = css`
@@ -19,7 +19,10 @@ const panelContentStyles = css`
   padding: 0.5em 1em;
 `;
 
-export interface PanelProps extends PanelData, ChildrenProp, RefProp {}
+export interface PanelProps
+  extends PanelData,
+    ChildrenProp,
+    RefProp<HTMLDivElement> {}
 
 export function Panel(props: PanelProps) {
   let el: HTMLDivElement;
@@ -28,7 +31,7 @@ export function Panel(props: PanelProps) {
   return (
     <div
       ref={(ref) => {
-        props.ref?.(ref);
+        isCallable(props.ref) ? props.ref(ref) : (props.ref = ref);
         el = ref;
       }}
       class={styles}

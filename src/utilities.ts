@@ -18,3 +18,7 @@
 export function px<T extends number | undefined>(value: T) {
   return value && `${value}px`;
 }
+
+export function isCallable<T>(x: T): x is Extract<T, Function> {
+  return typeof x === 'function';
+}

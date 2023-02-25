@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { Index } from 'solid-js';
-import { isPanelContent, PanelBranch, PanelGroup } from '../types';
+import { isPanelContent, PanelBranch, PanelGroup, RefProp } from '../types';
 import { px } from '../utilities';
 import { Panel } from './Panel';
 import { PanelResizer } from './PanelResizer';
@@ -11,12 +11,13 @@ const styles = css`
   justify-items: stretch;
 `;
 
-export function ResizableStack(props: {
-  ref?: HTMLDivElement;
+export interface ResizableStackProps extends RefProp<HTMLDivElement> {
   content: PanelBranch;
   direction: 'row' | 'column';
   onPanelsChange: (updated: PanelBranch) => void;
-}) {
+}
+
+export function ResizableStack(props: ResizableStackProps) {
   if (isPanelContent(props.content)) {
     return <Panel ref={props.ref} {...props.content} />;
   }
