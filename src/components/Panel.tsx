@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { ChildrenProp, PanelData, RefProp } from '../types';
 import { forwardRef, px } from '../utilities';
 import { Draggable } from './Draggable';
+import { DRAG_OVER_CLASS, DropArea } from './DropArea';
 
 const dropGradient = `
   #ff000077,
@@ -28,7 +29,7 @@ const styles = css`
     padding: 0.05em 0.4em;
   }
 
-  &.is-dragging-over {
+  &.${DRAG_OVER_CLASS} {
     background: linear-gradient(to bottom, ${dropGradient}),
       linear-gradient(to right, ${dropGradient});
   }
@@ -38,20 +39,17 @@ const panelContentStyles = css`
   padding: 0.5em 1em;
 `;
 
-export interface PanelProps
-  extends PanelData,
-    ChildrenProp,
-    RefProp<HTMLDivElement> {}
+export interface PanelProps extends PanelData, ChildrenProp, RefProp {}
 
 let instances = 0;
 
 export function Panel(props: PanelProps) {
-  let el: HTMLDivElement;
+  let el: HTMLElement;
   const instance = instances++;
 
   return (
-    <div
-      ref={(ref) => (el = forwardRef(props, ref))}
+    <DropArea
+      kind="panel"
       class={styles}
       style={{ 'flex-basis': px(props.size) }}
       onDragEnter={onDragEnter}
@@ -60,6 +58,8 @@ export function Panel(props: PanelProps) {
     >
       <Draggable
         as="header"
+        ref={(ref) => (el = forwardRef(props, ref))}
+        kind="panel"
         onDrag={onDrag}
         onDragEnd={onDragEnd}
         drawElement={() => el}
@@ -68,7 +68,7 @@ export function Panel(props: PanelProps) {
       </Draggable>
 
       <div class={panelContentStyles}>This is the content</div>
-    </div>
+    </DropArea>
   );
 
   function onDrag() {
@@ -79,26 +79,9 @@ export function Panel(props: PanelProps) {
     console.log('Drag ended', instance);
   }
 
-  function onDragEnter(event: DragEvent) {
-    // if (event.currentTarget == el) return;
+  function onDragEnter(event: DragEvent) {}
 
-    event.stopPropagation();
-    console.log('Drag enter', instance);
+  function onDragLeave(event: DragEvent) {}
 
-    if (!el.classList.contains('is-dragging-over'))
-      el.classList.add('is-dragging-over');
-  }
-
-  function onDragLeave(event: DragEvent) {
-    event.stopPropagation();
-    console.log('Drag leave', instance);
-
-    if (el.classList.contains('is-dragging-over'))
-      el.classList.remove('is-dragging-over');
-  }
-
-  function onDragOver(event: DragEvent) {
-    event.stopPropagation();
-    // console.log('Drag over panel', instance);
-  }
+  function onDragOver(event: DragEvent) {}
 }

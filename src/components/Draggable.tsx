@@ -1,10 +1,12 @@
-import { Dynamic } from 'solid-js/web';
-import { AsProp, ChildrenProp, ClassProp } from '../types';
+import { splitProps } from 'solid-js';
+import { Dom, HtmlParentProps, HtmlTag } from './Dom';
 
 export type DragDelta = [deltaX: number, deltaY: number];
 export type DragListener = (delta: DragDelta) => void;
 
-export interface DraggableProps extends AsProp, ChildrenProp, ClassProp {
+export interface DraggableProps<T extends HtmlTag>
+  extends Omit<HtmlParentProps<T>, 'onDrag' | 'draggable'> {
+  kind?: string;
   hideDrawImage?: boolean;
   drawElement?: () => HTMLElement;
   onDrag: DragListener;
@@ -12,23 +14,29 @@ export interface DraggableProps extends AsProp, ChildrenProp, ClassProp {
   onDragEnd?: () => void;
 }
 
-export function Draggable(props: DraggableProps) {
+export function Draggable<T extends HtmlTag>(props: DraggableProps<T>) {
   let dragStartX = 0;
   let dragStartY = 0;
   let lastEmittedDelta = [0, 0] as DragDelta;
   let hasSkippedOne = false;
 
+  const [, spread] = splitProps(props, [
+    'kind',
+    'drawElement',
+    'hideDrawImage',
+    'onDrag',
+    'onDragEnd',
+    'onDragStart',
+  ]);
+
   return (
-    <Dynamic
-      component={props.as ?? 'div'}
-      class={props.class}
+    <Dom
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onDrag={onDrag}
       draggable={true}
-    >
-      {props.children}
-    </Dynamic>
+      {...spread}
+    />
   );
 
   function emit(deltaX: number, deltaY: number) {
@@ -52,6 +60,10 @@ export function Draggable(props: DraggableProps) {
 
   function onDragStart(event: DragEvent) {
     event.stopPropagation();
+
+    if (props.kind) {
+      event.dataTransfer?.setData(`drag-kind/${props.kind}`, '');
+    }
 
     dragStartX = event.clientX;
     dragStartY = event.clientY;
