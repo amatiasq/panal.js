@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { isDragging, startDragging, stopDragging } from '../drag-controller';
 import { ChildrenProp, PanelData, RefProp } from '../types';
 import { forwardRef, px } from '../utilities';
 import { Draggable } from './Draggable';
@@ -60,6 +61,7 @@ export function Panel(props: PanelProps) {
     >
       <Draggable
         as="header"
+        onDragStart={onDragStart}
         onDrag={onDrag}
         onDragEnd={onDragEnd}
         drawElement={() => el}
@@ -75,12 +77,18 @@ export function Panel(props: PanelProps) {
     console.log('Draggin panel', instance);
   }
 
+  function onDragStart() {
+    startDragging('panel');
+    console.log('Drag started', instance);
+  }
+
   function onDragEnd() {
+    stopDragging();
     console.log('Drag ended', instance);
   }
 
   function onDragEnter(event: DragEvent) {
-    // if (event.currentTarget == el) return;
+    if (!isDragging('panel')) return;
 
     event.stopPropagation();
     console.log('Drag enter', instance);

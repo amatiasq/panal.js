@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { createMemo } from 'solid-js';
+import { startDragging, stopDragging } from '../drag-controller';
 import { Draggable } from './Draggable';
 
 export const handleStyles = css`
@@ -73,10 +74,12 @@ export function PanelResizer(props: {
         hideDrawImage
         onDragStart={() => {
           el.classList.add('is-dragging');
+          startDragging('resizer');
           props.onResizeStart();
         }}
         onDragEnd={() => {
           el.classList.remove('is-dragging');
+          stopDragging();
           props.onResizeEnd();
         }}
         onDrag={([x, y]) => {
