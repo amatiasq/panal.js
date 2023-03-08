@@ -15,11 +15,20 @@ export interface ResizableStackProps extends RefProp<HTMLDivElement> {
   content: PanelBranch;
   direction: 'row' | 'column';
   onPanelsChange: (updated: PanelBranch) => void;
+  // onDragStart?: () => void;
+  // onDragEnd?: () => void;
 }
 
 export function ResizableStack(props: ResizableStackProps) {
   if (isPanelContent(props.content)) {
-    return <Panel ref={props.ref} {...props.content} />;
+    return (
+      <Panel
+        ref={props.ref}
+        // onDragStart={props.onDragStart}
+        // onDragEnd={props.onDragEnd}
+        {...props.content}
+      />
+    );
   }
 
   const otherDirection = props.direction === 'row' ? 'column' : 'row';
@@ -97,6 +106,8 @@ export function ResizableStack(props: ResizableStackProps) {
               ref={panels[i]}
               direction={otherDirection}
               content={item()}
+              // onDragStart={props.onDragStart}
+              // onDragEnd={props.onDragEnd}
               onPanelsChange={(updated) => {
                 const copy = [...content().children];
                 copy[i] = updated;

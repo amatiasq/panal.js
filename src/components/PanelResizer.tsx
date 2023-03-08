@@ -68,13 +68,14 @@ export function PanelResizer(props: {
     <div
       ref={el}
       class={`Divider ${styles} ${props.direction} ${hoverStyles()}`}
+      data-kind="resizer"
     >
       <Draggable
         class={handleStyles}
         hideDrawImage
         onDragStart={() => {
           el.classList.add('is-dragging');
-          startDragging('resizer');
+          startDragging(el);
           props.onResizeStart();
         }}
         onDragEnd={() => {

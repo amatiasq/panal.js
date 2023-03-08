@@ -1,5 +1,9 @@
 import { css } from '@emotion/css';
-import { isDragging, startDragging, stopDragging } from '../drag-controller';
+import {
+  isDraggingSameKind,
+  startDragging,
+  stopDragging,
+} from '../drag-controller';
 import { ChildrenProp, PanelData, RefProp } from '../types';
 import { forwardRef, px } from '../utilities';
 import { Draggable } from './Draggable';
@@ -42,7 +46,10 @@ const panelContentStyles = css`
 export interface PanelProps
   extends PanelData,
     ChildrenProp,
-    RefProp<HTMLDivElement> {}
+    RefProp<HTMLDivElement> {
+  onDragStart?(): void;
+  onDragEnd?(): void;
+}
 
 let instances = 0;
 
@@ -54,6 +61,7 @@ export function Panel(props: PanelProps) {
     <div
       ref={(ref) => (el = forwardRef(props, ref))}
       class={styles}
+      data-kind="panel"
       style={{ 'flex-basis': px(props.size) }}
       onDragEnter={onDragEnter}
       onDragLeave={onDragLeave}
@@ -78,17 +86,19 @@ export function Panel(props: PanelProps) {
   }
 
   function onDragStart() {
-    startDragging('panel');
+    startDragging(el);
+    props.onDragStart?.();
     console.log('Drag started', instance);
   }
 
   function onDragEnd() {
     stopDragging();
+    props.onDragEnd?.();
     console.log('Drag ended', instance);
   }
 
   function onDragEnter(event: DragEvent) {
-    if (!isDragging('panel')) return;
+    if (!isDraggingSameKind(el)) return;
 
     event.stopPropagation();
     console.log('Drag enter', instance);

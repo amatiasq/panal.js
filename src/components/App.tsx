@@ -17,6 +17,10 @@ const styles = css`
   > :only-child {
     height: 100%;
   }
+
+  // &.dragging-panel [data-kind="panel"] > header:not(.is-dragging)) {
+  //   display: none;
+  // }
 `;
 
 export function App() {
@@ -25,13 +29,17 @@ export function App() {
     distributionStorage.read()
   );
 
+  let el!: HTMLDivElement;
+
   createEffect(() => distributionStorage.write(distribution()));
 
   return (
-    <div class={styles}>
+    <div ref={el} class={styles}>
       <ResizableStack
         direction={rootDirection}
         content={{ children: distribution() ?? DEFAULT_DISTRIBUTION }}
+        // onDragStart={() => el.classList.add('dragging-panel')}
+        // onDragEnd={() => el.classList.remove('dragging-panel')}
         onPanelsChange={(newContent) =>
           setDistribution((newContent as PanelGroup).children)
         }

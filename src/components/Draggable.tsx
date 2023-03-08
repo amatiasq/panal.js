@@ -1,4 +1,5 @@
 import { Dynamic } from 'solid-js/web';
+import { isDragging } from '../drag-controller';
 import { AsProp, ChildrenProp, ClassProp } from '../types';
 
 export type DragDelta = [deltaX: number, deltaY: number];
@@ -25,7 +26,7 @@ export function Draggable(props: DraggableProps) {
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onDrag={onDrag}
-      draggable={true}
+      draggable={!isDragging()}
     >
       {props.children}
     </Dynamic>
