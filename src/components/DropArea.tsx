@@ -1,6 +1,5 @@
-import { splitProps } from 'solid-js';
-import { forwardRef } from '../utilities';
-import { Dom, HtmlParentProps, HtmlTag } from './Dom';
+import { createLogger, forwardRef, spreadProps } from '../utilities';
+import { Dom, HtmlParentProps, HtmlTag, TagToElement } from './Dom';
 
 export interface DropAreaProps<T extends HtmlTag>
   extends Omit<
@@ -13,36 +12,29 @@ export interface DropAreaProps<T extends HtmlTag>
   onDragOver?: (event: DragEvent) => void;
 }
 
-let instances = 0;
-
 export const DRAG_OVER_CLASS = 'is-dragging-over';
 
 export function DropArea<T extends HtmlTag>(props: DropAreaProps<T>) {
   let el: HTMLElement;
-  const instance = instances++;
-  const log = (...args: any[]) => console.log(`DropArea[${instance}]`, ...args);
-
-  const [, spread] = splitProps(props, [
-    'onDragEnter',
-    'onDragLeave',
-    'onDragOver',
-  ]);
+  let dragOverCount = 0;
+  const log = createLogger('DropArea');
 
   return (
     <Dom
-      ref={(ref) => (el = forwardRef(props, ref))}
+      ref={(ref: TagToElement<T>) => (el = forwardRef(props, ref))}
       onDragEnter={onDragEnter}
       onDragLeave={onDragLeave}
       onDragOver={onDragOver}
-      {...spread}
+      {...spreadProps(props, ['onDragEnter', 'onDragLeave', 'onDragOver'])}
     />
   );
 
   function onDragEnter(event: DragEvent) {
     if (!isRightKind(event)) return;
+    dragOverCount++;
 
     event.stopPropagation();
-    log('Drag enter');
+    log('Drag enter', dragOverCount);
 
     if (!el.classList.contains(DRAG_OVER_CLASS))
       el.classList.add(DRAG_OVER_CLASS);
@@ -50,9 +42,11 @@ export function DropArea<T extends HtmlTag>(props: DropAreaProps<T>) {
 
   function onDragLeave(event: DragEvent) {
     if (!isRightKind(event)) return;
+    dragOverCount--;
+    log('Drag leave', dragOverCount);
+    if (dragOverCount > 0) return;
 
     event.stopPropagation();
-    log('Drag leave');
 
     if (el.classList.contains(DRAG_OVER_CLASS))
       el.classList.remove(DRAG_OVER_CLASS);

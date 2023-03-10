@@ -1,6 +1,7 @@
 import { Dynamic } from 'solid-js/web';
 import { isDragging } from '../drag-controller';
 import { AsProp, ChildrenProp, ClassProp } from '../types';
+import { createLogger } from '../utilities';
 
 export type DragDelta = [deltaX: number, deltaY: number];
 export type DragListener = (delta: DragDelta) => void;
@@ -18,6 +19,7 @@ export function Draggable(props: DraggableProps) {
   let dragStartY = 0;
   let lastEmittedDelta = [0, 0] as DragDelta;
   let hasSkippedOne = false;
+  const log = createLogger('Draggable');
 
   return (
     <Dynamic

@@ -1,10 +1,10 @@
-import { splitProps } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
 import { Dynamic } from 'solid-js/web';
+import { forwardRef, spreadProps } from '../utilities';
 
 export type HtmlTag = keyof JSX.HTMLElementTags;
 
-type TagToElement<T extends HtmlTag> = HTMLElementTagNameMap[T];
+export type TagToElement<T extends HtmlTag> = HTMLElementTagNameMap[T];
 
 type ElementProps<T extends HtmlTag> = Pick<
   JSX.HTMLElementTags[T],
@@ -31,6 +31,11 @@ export interface HtmlParentProps<T extends HtmlTag> extends HtmlProps<T> {
 type DomProps<T extends HtmlTag> = HtmlParentProps<T>;
 
 export function Dom<T extends HtmlTag>(props: DomProps<T>) {
-  const [asProp, rest] = splitProps(props, ['as']);
-  return <Dynamic component={(asProp.as || 'div') as any} {...rest} />;
+  return (
+    <Dynamic
+      component={(props.as || 'div') as any}
+      ref={(ref: TagToElement<T>) => forwardRef(props, ref)}
+      {...spreadProps(props, ['as', 'ref'])}
+    />
+  );
 }

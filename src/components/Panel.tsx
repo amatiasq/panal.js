@@ -5,8 +5,9 @@ import {
   stopDragging,
 } from '../drag-controller';
 import { ChildrenProp, PanelData, RefProp } from '../types';
-import { forwardRef, px } from '../utilities';
+import { createLogger, forwardRef, px } from '../utilities';
 import { Draggable } from './Draggable';
+import { DropArea } from './DropArea';
 
 const dropGradient = `
   #ff000077,
@@ -43,22 +44,17 @@ const panelContentStyles = css`
   padding: 0.5em 1em;
 `;
 
-export interface PanelProps
-  extends PanelData,
-    ChildrenProp,
-    RefProp<HTMLDivElement> {
+export interface PanelProps extends PanelData, ChildrenProp, RefProp {
   onDragStart?(): void;
   onDragEnd?(): void;
 }
 
-let instances = 0;
-
 export function Panel(props: PanelProps) {
-  let el: HTMLDivElement;
-  const instance = instances++;
+  let el: HTMLElement;
+  const log = createLogger('Panel');
 
   return (
-    <div
+    <DropArea
       ref={(ref) => (el = forwardRef(props, ref))}
       class={styles}
       data-kind="panel"
@@ -78,30 +74,30 @@ export function Panel(props: PanelProps) {
       </Draggable>
 
       <div class={panelContentStyles}>This is the content</div>
-    </div>
+    </DropArea>
   );
 
   function onDrag() {
-    console.log('Draggin panel', instance);
+    // log('Draggin panel');
   }
 
   function onDragStart() {
     startDragging(el);
     props.onDragStart?.();
-    console.log('Drag started', instance);
+    log('Drag started');
   }
 
   function onDragEnd() {
     stopDragging();
     props.onDragEnd?.();
-    console.log('Drag ended', instance);
+    log('Drag ended');
   }
 
   function onDragEnter(event: DragEvent) {
     if (!isDraggingSameKind(el)) return;
 
     event.stopPropagation();
-    console.log('Drag enter', instance);
+    log('Drag enter');
 
     if (!el.classList.contains('is-dragging-over'))
       el.classList.add('is-dragging-over');
@@ -109,7 +105,7 @@ export function Panel(props: PanelProps) {
 
   function onDragLeave(event: DragEvent) {
     event.stopPropagation();
-    console.log('Drag leave', instance);
+    log('Drag leave');
 
     if (el.classList.contains('is-dragging-over'))
       el.classList.remove('is-dragging-over');
@@ -117,6 +113,6 @@ export function Panel(props: PanelProps) {
 
   function onDragOver(event: DragEvent) {
     event.stopPropagation();
-    // console.log('Drag over panel', instance);
+    // log('Drag over panel');
   }
 }
