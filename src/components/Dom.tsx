@@ -6,6 +6,22 @@ export type HtmlTag = keyof JSX.HTMLElementTags;
 
 export type TagToElement<T extends HtmlTag> = HTMLElementTagNameMap[T];
 
+// DROP ALL OF THIS
+// Use bindings / directives instead
+// https://www.solidjs.com/tutorial/bindings_directives
+
+/*
+  <div class="modal" use:draggable>
+    Some Modal
+  </div>
+
+  function draggable(el, accessor) {
+    // const onClick = (e) => !el.contains(e.target) && accessor()?.();
+    // document.body.addEventListener("click", onClick);
+    // onCleanup(() => document.body.removeEventListener("click", onClick));
+  }
+*/
+
 type ElementProps<T extends HtmlTag> = Pick<
   JSX.HTMLElementTags[T],
   | 'class'
